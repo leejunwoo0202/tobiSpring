@@ -1,13 +1,19 @@
 package tobiSpring.tobiSpring.dao;
 
+import org.junit.jupiter.api.Test;
 import tobiSpring.tobiSpring.domain.User;
 
 import java.sql.SQLException;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
+
 
 class UserDaoTest {
-    public static void main(String[] args) throws SQLException, ClassNotFoundException {
+
+
+
+    @Test
+    public void addAndGet() throws SQLException, ClassNotFoundException {
 
         UserDao dao = new UserDao();
 
@@ -20,19 +26,8 @@ class UserDaoTest {
 
         User user2 = dao.get(user.getId());
 
-        if(!user.getName().equals(user2.getName())){
-            System.out.println("테스트 실패 (name)");
-
-        }
-        else if(!user.getPassword().equals(user2.getPassword())){
-            System.out.println("테스트 실패 (password)");
-
-        }
-        else {
-            System.out.println("조회 테스트 성공");
-
-        }
-
+        assertThat(user.getName()).isEqualTo(user2.getName());
+        assertThat(user.getPassword()).isEqualTo(user2.getPassword());
 
 
 
