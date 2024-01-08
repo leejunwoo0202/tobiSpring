@@ -10,6 +10,20 @@ import java.sql.SQLException;
 
 public class UserDao {
 
+    ConnectionMaker connectionMaker;
+
+
+    // 생성자 방식
+    /*public UserDao(ConnectionMaker connectionMaker)
+    {
+        this.connectionMaker = connectionMaker;
+    }*/
+
+    // 메서드 방식
+    public void setConnectionMaker(ConnectionMaker connectionMaker) {
+        this.connectionMaker = connectionMaker;
+    }
+
     public void add(User user) throws ClassNotFoundException, SQLException {
         Connection c = getConnection();
 

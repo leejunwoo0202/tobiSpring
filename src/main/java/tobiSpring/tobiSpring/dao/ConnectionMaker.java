@@ -1,2 +1,9 @@
-package tobiSpring.tobiSpring.dao;public interface ConnectionMaker {
+package tobiSpring.tobiSpring.dao;
+
+
+import org.mariadb.jdbc.Connection;
+
+public interface ConnectionMaker {
+
+    public Connection makeConnection();
 }
