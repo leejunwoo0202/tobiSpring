@@ -18,6 +18,7 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	implementation group: 'org.springframework', name: 'spring-jdbc', version: '5.2.0.RELEASE'
 
 	implementation group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '3.3.2'
 

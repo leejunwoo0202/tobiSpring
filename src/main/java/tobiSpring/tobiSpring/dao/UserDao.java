@@ -10,22 +10,9 @@ import java.sql.SQLException;
 
 public class UserDao {
 
-    ConnectionMaker connectionMaker;
-
-
-    // 생성자 방식
-    /*public UserDao(ConnectionMaker connectionMaker)
-    {
-        this.connectionMaker = connectionMaker;
-    }*/
-
-    // 메서드 방식
-    public void setConnectionMaker(ConnectionMaker connectionMaker) {
-        this.connectionMaker = connectionMaker;
-    }
 
     public void add(User user) throws ClassNotFoundException, SQLException {
-        Connection c = getConnection();
+        java.sql.Connection c = getConnection();
 
         PreparedStatement ps = c.prepareStatement(
                 "insert into users(id, name, password) values(?,?,?)");
@@ -49,7 +36,7 @@ public class UserDao {
     }
 
     public User get(String id) throws ClassNotFoundException, SQLException {
-        Connection c = getConnection();
+        java.sql.Connection c = getConnection();
 
         PreparedStatement ps = c.prepareStatement(
                 "select * from users where id = ?");
@@ -57,16 +44,44 @@ public class UserDao {
 
         ResultSet rs = ps.executeQuery();
         rs.next();
-        User user = new User();
-        user.setId(rs.getString("id"));
-        user.setName(rs.getString("name"));
-        user.setPassword(rs.getString("password"));
+
+        User user = new User(rs.getString("id"),
+                rs.getString("name"),
+                rs.getString("password")
+        );
+
 
         rs.close();
         ps.close();
         c.close();
 
         return user;
+    }
+
+    public void deleteAll() throws SQLException, ClassNotFoundException {
+        java.sql.Connection c = getConnection();
+
+        PreparedStatement ps = c.prepareStatement("delete from users");
+        ps.executeUpdate();
+
+        ps.close();
+        c.close();
+    }
+
+    public int getCount() throws SQLException, ClassNotFoundException {
+        java.sql.Connection c = getConnection();
+
+        PreparedStatement ps = c.prepareStatement("select count(*) from users");
+
+        ResultSet rs = ps.executeQuery();
+        rs.next();
+        int count = rs.getInt(1);
+
+        rs.close();
+        ps.close();
+        c.close();
+
+        return count;
     }
 
 
