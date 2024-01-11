@@ -1,19 +1,14 @@
 package tobiSpring.tobiSpring.dao;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import tobiSpring.tobiSpring.domain.User;
 import tobiSpring.tobiSpring.factories.DaoFactory;
 
-import java.sql.SQLDataException;
 import java.sql.SQLException;
 
 import static org.assertj.core.api.Assertions.*;
@@ -28,6 +23,12 @@ class UserDaoTest {
     @Autowired
     private UserDao userDao;
 
+
+    @BeforeEach
+    public void setUp(){
+        System.out.print(this.userDao);
+
+    }
 
     @AfterEach
     public void delete() throws SQLException, ClassNotFoundException {
@@ -105,12 +106,10 @@ class UserDaoTest {
     public void getUserFailure() throws SQLException, ClassNotFoundException{
 
         // JUPITER 이용
-        User user1 = new User("gyumee", "박성철", "springno1");
 
-        userDao.add(user1);
-        assertThat(userDao.getCount()).isEqualTo(1);
+        assertThat(userDao.getCount()).isEqualTo(0);
 
-        Assertions.assertThrows(SQLDataException.class, () -> {
+        Assertions.assertThrows(EmptyResultDataAccessException.class, () -> {
             userDao.get("unknown_id");
 
         }
@@ -119,7 +118,7 @@ class UserDaoTest {
         // ASSERTJ 이용
 
         org.assertj.core.api.Assertions.assertThatThrownBy( () -> userDao.get("unknown_id"))
-                .isInstanceOf(SQLDataException.class);
+                .isInstanceOf(EmptyResultDataAccessException.class);
 
 
 
