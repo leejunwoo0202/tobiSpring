@@ -10,12 +10,12 @@ import java.util.Set;
 
 public class JUnitTest extends Condition<Collection<? extends JUnitTest>> {
 
-    static Set<JUnitTest> testObjects = new HashSet<>();
+    Set<JUnitTest> testObjects = new HashSet<>();
 
     @Test
     public void test1() {
 
-        Assertions.assertThat(testObjects).isNot(this);
+        Assertions.assertThat(testObjects).isNotIn(this);
         testObjects.add(this);
         
         for(JUnitTest element : testObjects)
