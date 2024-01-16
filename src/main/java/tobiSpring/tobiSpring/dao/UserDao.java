@@ -9,21 +9,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public abstract class UserDao {
+public class UserDao {
 
 
     public void add(User user) throws ClassNotFoundException, SQLException {
-        java.sql.Connection c = getConnection();
-
-        PreparedStatement ps = c.prepareStatement("insert into users(id, name, password) values(?,?,?)");
-        ps.setString(1, user.getId());
-        ps.setString(2, user.getName());
-        ps.setString(3, user.getPassword());
-
-        ps.executeUpdate();
-
-        ps.close();
-        c.close();
+        StatementStrategy st = new AddStatement(user);
+        jdbcContextWithStatementStrategy(st);
 
 
     }
@@ -68,7 +59,7 @@ public abstract class UserDao {
 
     }
 
-    abstract protected PreparedStatement makeStatement(java.sql.Connection c) throws SQLException;
+
 
     public int getCount() throws SQLException, ClassNotFoundException {
         java.sql.Connection c = null;

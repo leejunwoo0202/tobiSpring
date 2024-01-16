@@ -12,8 +12,8 @@ public class DaoFactory {
     @Bean
     public UserDao userDao()
     {
-        //return new UserDao();
-        return null;
+        return new UserDao();
+
     }
 
 
