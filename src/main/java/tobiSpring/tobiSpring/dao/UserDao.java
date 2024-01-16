@@ -12,9 +12,28 @@ import java.sql.SQLException;
 public class UserDao {
 
 
-    public void add(User user) throws ClassNotFoundException, SQLException {
-        StatementStrategy st = new AddStatement(user);
-        jdbcContextWithStatementStrategy(st);
+    public void add(final User user) throws ClassNotFoundException, SQLException {
+
+        jdbcContextWithStatementStrategy(
+                new StatementStrategy(){
+
+            public PreparedStatement makePreparedStatement(java.sql.Connection c) throws SQLException {
+
+                PreparedStatement ps = c.prepareStatement(
+                        "insert into users(id, name, password) values(?,?,?)");
+                ps.setString(1, user.getId());
+                ps.setString(2, user.getName());
+                ps.setString(3, user.getPassword());
+
+                return ps;
+
+            }
+        }
+        );
+
+
+
+
 
 
     }
