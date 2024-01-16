@@ -59,35 +59,83 @@ public class UserDao {
         ps.close();
         c.close();
 
-        if(user == null) throw new EmptyResultDataAccessException(1);
 
+        if(user == null) throw new EmptyResultDataAccessException(1);
         return user;
     }
 
     public void deleteAll() throws SQLException, ClassNotFoundException {
-        java.sql.Connection c = getConnection();
+        java.sql.Connection c = null;
+        PreparedStatement ps = null;
 
-        PreparedStatement ps = c.prepareStatement("delete from users");
-        ps.executeUpdate();
+        try {
+            c = getConnection();
+            ps = c.prepareStatement("delete from users");
+            ps.executeUpdate();
+        }catch(Exception e){
+            throw e;
+        }finally {
+            if(ps != null){
+                try{
+                    ps.close();
+                }catch (Exception e){
 
-        ps.close();
-        c.close();
+                }
+            }
+            if(ps != null){
+                try{
+                    ps.close();
+                }catch (Exception e){
+
+                }
+            }
+        }
     }
 
     public int getCount() throws SQLException, ClassNotFoundException {
-        java.sql.Connection c = getConnection();
+        java.sql.Connection c = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
 
-        PreparedStatement ps = c.prepareStatement("select count(*) from users");
+        try {
+            c = getConnection();
+            ps = c.prepareStatement("select count(*) from users");
+            rs = ps.executeQuery();
+            rs.next();
+            return rs.getInt(1);
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (Exception e) {
 
-        ResultSet rs = ps.executeQuery();
-        rs.next();
-        int count = rs.getInt(1);
+                }
+            }
+            if (ps != null) {
+                try {
+                    ps.close();
+                } catch (Exception e) {
 
-        rs.close();
-        ps.close();
-        c.close();
+                }
+            }
+            if (c != null) {
+                try {
+                    c.close();
+                } catch (Exception e) {
 
-        return count;
+                }
+            }
+
+        }
+
+
+
+
+
+
+
     }
 
 
