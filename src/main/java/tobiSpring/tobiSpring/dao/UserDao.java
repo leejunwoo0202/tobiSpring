@@ -11,6 +11,7 @@ import java.sql.SQLException;
 
 public class UserDao {
 
+    private DataSource dataSource;
     private JdbcContext jdbcContext;
 
     public void setJdbcContext(JdbcContext jdbcContext){
@@ -18,6 +19,9 @@ public class UserDao {
     }
 
 
+    public void setDataSource(DataSource dataSource){
+        this.dataSource = dataSource;
+    }
 
     public void add(final User user) throws ClassNotFoundException, SQLException {
 
@@ -74,7 +78,7 @@ public class UserDao {
 
 
 
-    private static Connection getConnection() throws ClassNotFoundException, SQLException {
+    public Connection getConnection() throws ClassNotFoundException, SQLException {
         Class.forName("org.mariadb.jdbc.Driver");
         Connection c = (Connection) DriverManager.getConnection(
                 "jdbc:mariadb://localhost:3307/bootex", "bootuser", "bootuser");

@@ -7,9 +7,11 @@ import java.sql.SQLException;
 public class JdbcContext {
 
     private DataSource dataSource;
+    UserDao userDao = new UserDao();
 
-    public void setDataSource(DataSource dataSource){
-        this.dataSource = dataSource;
+    public void setDataSource(DataSource dataSource) throws SQLException, ClassNotFoundException {
+
+        this.dataSource = (DataSource) userDao.getConnection();
     }
 
     // PreparedStatement는 State를 상속받기 때문에 매개변수로 올 수 있음
