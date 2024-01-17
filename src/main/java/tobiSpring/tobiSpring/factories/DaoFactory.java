@@ -10,11 +10,17 @@ import tobiSpring.tobiSpring.dao.UserDao;
 public class DaoFactory {
 
     @Bean
-    public UserDao userDao()
-    {
-        return new UserDao();
+    public UserDao userDao() {
+        UserDao userDao = new UserDao();
 
+        return userDao;
     }
+
+
+
+
+
+
 
 
 }

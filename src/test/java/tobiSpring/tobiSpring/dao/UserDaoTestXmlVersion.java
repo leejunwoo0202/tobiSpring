@@ -1,33 +1,37 @@
 package tobiSpring.tobiSpring.dao;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.support.GenericXmlApplicationContext;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import tobiSpring.tobiSpring.domain.User;
-import tobiSpring.tobiSpring.factories.DaoFactory;
 
 import java.sql.SQLException;
 
-import static org.assertj.core.api.Assertions.*;
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = DaoFactory.class)
-class UserDaoTest {
+public class UserDaoTestXmlVersion {
 
+    UserDao userDao;
 
-    @Autowired
-    private UserDao userDao;
 
 
 
     @BeforeEach
     public void setUp(){
+
+        ClassPathXmlApplicationContext context =
+                new ClassPathXmlApplicationContext("applicationContext.xml");
+
+        userDao = context.getBean("userDao", UserDao.class);
+
         System.out.print(this.userDao);
 
     }
@@ -112,9 +116,9 @@ class UserDaoTest {
         assertThat(userDao.getCount()).isEqualTo(0);
 
         Assertions.assertThrows(EmptyResultDataAccessException.class, () -> {
-            userDao.get("unknown_id");
+                    userDao.get("unknown_id");
 
-        }
+                }
         );
 
         // ASSERTJ 이용
@@ -127,3 +131,4 @@ class UserDaoTest {
     }
 
 }
+

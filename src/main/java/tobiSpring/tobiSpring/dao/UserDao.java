@@ -11,39 +11,39 @@ import java.sql.SQLException;
 
 public class UserDao {
 
+    private JdbcContext jdbcContext;
+
+    public void setJdbcContext(JdbcContext jdbcContext){
+        this.jdbcContext = jdbcContext;
+    }
+
+
 
     public void add(final User user) throws ClassNotFoundException, SQLException {
 
-        jdbcContextWithStatementStrategy(
-                new StatementStrategy(){
+        this.jdbcContext.workWithStatementStrategy(
+                c -> {
 
-            public PreparedStatement makePreparedStatement(java.sql.Connection c) throws SQLException {
+                    PreparedStatement ps = c.prepareStatement(
+                            "insert into users(id, name, password) values(?,?,?)");
+                    ps.setString(1, user.getId());
+                    ps.setString(2, user.getName());
+                    ps.setString(3, user.getPassword());
 
-                PreparedStatement ps = c.prepareStatement(
-                        "insert into users(id, name, password) values(?,?,?)");
-                ps.setString(1, user.getId());
-                ps.setString(2, user.getName());
-                ps.setString(3, user.getPassword());
+                    return ps;
 
-                return ps;
+                }
+        );
+    }
 
-            }
-        }
+    public void deleteAll() throws SQLException, ClassNotFoundException {
+
+        this.jdbcContext.workWithStatementStrategy(
+                c -> c.prepareStatement("delete from users")
         );
 
-
-
-
-
-
     }
 
-    private static Connection getConnection() throws ClassNotFoundException, SQLException {
-        Class.forName("org.mariadb.jdbc.Driver");
-        Connection c = (Connection) DriverManager.getConnection(
-                "jdbc:mariadb://localhost:3307/bootex", "bootuser", "bootuser");
-        return c;
-    }
 
     public User get(String id) throws ClassNotFoundException, SQLException {
         java.sql.Connection c = getConnection();
@@ -72,12 +72,14 @@ public class UserDao {
         return user;
     }
 
-    public void deleteAll() throws SQLException, ClassNotFoundException {
-        StatementStrategy st = new DeleteAllStatement();
-        jdbcContextWithStatementStrategy(st);
 
+
+    private static Connection getConnection() throws ClassNotFoundException, SQLException {
+        Class.forName("org.mariadb.jdbc.Driver");
+        Connection c = (Connection) DriverManager.getConnection(
+                "jdbc:mariadb://localhost:3307/bootex", "bootuser", "bootuser");
+        return c;
     }
-
 
 
     public int getCount() throws SQLException, ClassNotFoundException {
@@ -127,35 +129,6 @@ public class UserDao {
     }
 
 
-    public void jdbcContextWithStatementStrategy(StatementStrategy stmt) throws SQLException, ClassNotFoundException {
-        java.sql.Connection c = null;
-        PreparedStatement ps = null;
-
-        try {
-            c = getConnection();
-
-            ps = stmt.makePreparedStatement(c);
-
-            ps.executeUpdate();
-        }catch(Exception e){
-            throw e;
-        }finally {
-            if(ps != null){
-                try{
-                    ps.close();
-                }catch (Exception e){
-
-                }
-            }
-            if(ps != null){
-                try{
-                    ps.close();
-                }catch (Exception e){
-
-                }
-            }
-        }
-    }
 
 
 }
