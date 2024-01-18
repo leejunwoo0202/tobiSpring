@@ -9,14 +9,17 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.GenericXmlApplicationContext;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import tobiSpring.tobiSpring.domain.User;
+import tobiSpring.tobiSpring.factories.DaoFactory;
 
 import java.sql.SQLException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
+
 public class UserDaoTestXmlVersion {
 
     UserDao userDao;
