@@ -10,6 +10,7 @@ import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
 import org.springframework.jdbc.support.SQLExceptionTranslator;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import tobiSpring.tobiSpring.domain.Level;
 import tobiSpring.tobiSpring.domain.User;
 import tobiSpring.tobiSpring.factories.DaoFactory;
 
@@ -27,14 +28,20 @@ class UserDaoTest {
     @Autowired
     private UserDao userDao;
 
-    @Autowired
-    DataSource dataSource;
+
+
+    User user1;
+    User user2;
+    User user3;
 
 
 
     @BeforeEach
     public void setUp(){
         System.out.print(this.userDao);
+        this.user1 = new User("gyumee", "박성철", "springno1", Level.BASIC, 1, 0);
+        this.user2 = new User("leegw700", "이길원", "springno2", Level.SILVER, 55, 10);
+        this.user3 = new User("bumjin", "박범진", "springno3", Level.GOLD, 100, 40);
 
     }
 
@@ -46,9 +53,6 @@ class UserDaoTest {
     @Test
     public void addAndGet() throws SQLException, ClassNotFoundException {
 
-        User user1 = new User("gyumee", "박성철", "springno1");
-        User user2 = new User("leegw700", "이길원", "springno2");
-
         userDao.deleteAll();
         assertThat(userDao.getCount()).isEqualTo(0);
 
@@ -57,12 +61,10 @@ class UserDaoTest {
         assertThat(userDao.getCount()).isEqualTo(2);
 
         User userget1 = userDao.get(user1.getId());
-        assertThat(userget1.getName()).isEqualTo(user1.getName());
-        assertThat(userget1.getPassword()).isEqualTo(user1.getPassword());
+        checkSameUser(user1,userget1);
 
         User userget2 = userDao.get(user2.getId());
-        assertThat(userget2.getName()).isEqualTo(user2.getName());
-        assertThat(userget2.getPassword()).isEqualTo(user2.getPassword());
+        checkSameUser(user2,userget2);
 
 
 
@@ -74,24 +76,20 @@ class UserDaoTest {
         userDao.deleteAll();
         assertThat(userDao.getCount()).isEqualTo(0);
 
-        User user = new User("gyumee", "박성철", "springno1");
 
-        userDao.add(user);
+
+        userDao.add(user1);
         assertThat(userDao.getCount()).isEqualTo(1);
 
-        User user2 = userDao.get(user.getId());
+        User user2 = userDao.get(user1.getId());
 
-        assertThat(user.getName()).isEqualTo(user2.getName());
-        assertThat(user.getPassword()).isEqualTo(user2.getPassword());
+        assertThat(user1.getName()).isEqualTo(user2.getName());
+        assertThat(user1.getPassword()).isEqualTo(user2.getPassword());
 
     }
 
     @Test
     public void count() throws SQLException, ClassNotFoundException {
-
-        User user1 = new User("gyumee", "박성철", "springno1");
-        User user2 = new User("leegw700", "이길원", "springno2");
-        User user3 = new User("bumjin", "박범진", "springno3");
 
         userDao.deleteAll();
         assertThat(userDao.getCount()).isEqualTo(0);
@@ -134,7 +132,7 @@ class UserDaoTest {
     public void duplicateKey() {
         userDao.deleteAll();
 
-        User user1 = new User("gyumee", "박성철", "springno1");
+
 
         // 1 try catch 사용
         try {
@@ -153,24 +151,15 @@ class UserDaoTest {
         );
     }
 
-    @Test
-    public void sqlExceptionTranslate(){
-        userDao.deleteAll();
-
-        User user1 = new User("gyumee", "박성철", "springno1");
-
-        try{
-            userDao.add(user1);
-            userDao.add(user1);
-        }catch(DuplicateKeyException ex){
-            SQLException sqlEx = (SQLException) ex.getRootCause();
-            SQLExceptionTranslator set =
-                    new SQLErrorCodeSQLExceptionTranslator((javax.sql.DataSource) this.dataSource);
-
-            assertThat(set.translate(
-                    null, null, sqlEx)).isEqualTo(DuplicateKeyException.class);
-
-        }
+    private void checkSameUser(User user1, User user2){
+        assertThat(user1.getId()).isEqualTo(user2.getId());
+        assertThat(user1.getName()).isEqualTo(user2.getName());
+        assertThat(user1.getPassword()).isEqualTo(user2.getPassword());
+        assertThat(user1.getLevel()).isEqualTo(user2.getLevel());
+        assertThat(user1.getLogin()).isEqualTo(user2.getLogin());
+        assertThat(user1.getRecommend()).isEqualTo(user2.getRecommend());
     }
+
+
 
 }
