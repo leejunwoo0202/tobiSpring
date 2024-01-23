@@ -4,7 +4,10 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
+import org.springframework.jdbc.support.SQLExceptionTranslator;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import tobiSpring.tobiSpring.domain.User;
@@ -24,6 +27,9 @@ class UserDaoTest {
     @Autowired
     private UserDao userDao;
 
+    @Autowired
+    DataSource dataSource;
+
 
 
     @BeforeEach
@@ -39,8 +45,6 @@ class UserDaoTest {
 
     @Test
     public void addAndGet() throws SQLException, ClassNotFoundException {
-
-
 
         User user1 = new User("gyumee", "박성철", "springno1");
         User user2 = new User("leegw700", "이길원", "springno2");
@@ -124,6 +128,49 @@ class UserDaoTest {
 
 
 
+    }
+
+    @Test
+    public void duplicateKey() {
+        userDao.deleteAll();
+
+        User user1 = new User("gyumee", "박성철", "springno1");
+
+        // 1 try catch 사용
+        try {
+            userDao.add(user1);
+            userDao.add(user1);
+        } catch (DuplicateKeyException e) {
+            System.out.println("duplicateKey예외");
+        }
+
+        // 2 JUPITER 이용
+        Assertions.assertThrows(DuplicateKeyException.class, () -> {
+            userDao.add(user1);
+            userDao.add(user1);
+
+                }
+        );
+    }
+
+    @Test
+    public void sqlExceptionTranslate(){
+        userDao.deleteAll();
+
+        User user1 = new User("gyumee", "박성철", "springno1");
+
+        try{
+            userDao.add(user1);
+            userDao.add(user1);
+        }catch(DuplicateKeyException ex){
+            SQLException sqlEx = (SQLException) ex.getRootCause();
+            SQLExceptionTranslator set =
+                    new SQLErrorCodeSQLExceptionTranslator((javax.sql.DataSource) this.dataSource);
+
+            assertThat(set.translate(
+                    null, null, sqlEx)).isEqualTo(DuplicateKeyException.class);
+
+        }
     }
 
 }
