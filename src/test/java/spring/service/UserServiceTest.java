@@ -36,11 +36,11 @@ class UserServiceTest {
         System.out.println("userDao = " + userDao);
         System.out.println("userService = " + userService);
         users = Arrays.asList(
-                new User("a", "aaa", "1111", Level.BASIC, 49, 0),
-                new User("b", "bbb", "2222", Level.BASIC, 50, 0),
-                new User("c", "ccc", "3333", Level.BASIC, 60, 29),
-                new User("d", "ddd", "4444", Level.SILVER, 60, 30),
-                new User("e", "eee", "5555", Level.SILVER, 100, 100)
+                new User("a", "aaa", "1111", Level.BASIC, UserService.MIN_LOGCOUNT_FOR_SILVER-1, 0),
+                new User("b", "bbb", "2222", Level.BASIC, UserService.MIN_LOGCOUNT_FOR_SILVER, 0),
+                new User("c", "ccc", "3333", Level.BASIC, 60, UserService.MIN_RECOMMEND_FOR_GOLD-1),
+                new User("d", "ddd", "4444", Level.SILVER, 60, UserService.MIN_RECOMMEND_FOR_GOLD),
+                new User("e", "eee", "5555", Level.SILVER, 100, Integer.MAX_VALUE)
         );
     }
 
@@ -53,13 +53,28 @@ class UserServiceTest {
     public void upgradeLevels(){
         userDao.deleteAll();
 
+        for(User user : users) userDao.add(user);
+
+        userService.canUpgradeLevels();
+
+        checkLevelUpgraded(users.get(0), false);
+        checkLevelUpgraded(users.get(1), true);
+        checkLevelUpgraded(users.get(2), false);
+        checkLevelUpgraded(users.get(3), true);
+        checkLevelUpgraded(users.get(4), false);
 
 
-        checkLevel(users.get(0), Level.BASIC);
-        checkLevel(users.get(1), Level.SILVER);
-        checkLevel(users.get(2), Level.SILVER);
-        checkLevel(users.get(3), Level.GOLD);
-        checkLevel(users.get(4), Level.GOLD);
+
+    }
+
+    private void checkLevelUpgraded(User user, boolean upgraded) {
+
+        User userUpdate = userDao.get(user.getId());
+        if(upgraded){
+            Assertions.assertThat(userUpdate.getLevel()).isEqualTo(user.getLevel().nextLevel());
+        }else{
+            Assertions.assertThat(userUpdate.getLevel()).isEqualTo(user.getLevel());
+        }
 
     }
 

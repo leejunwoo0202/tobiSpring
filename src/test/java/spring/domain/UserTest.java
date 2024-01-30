@@ -18,6 +18,7 @@ class UserTest {
 
     @Test
     public void upgradeLevel(){
+
         Level[] levels = Level.values();
 
         for(Level level : levels){
