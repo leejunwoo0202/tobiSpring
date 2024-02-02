@@ -24,6 +24,8 @@ public class User {
     int login;
     int recommend;
 
+    String email;
+
     public Level getLevel(){
         return level;
     }

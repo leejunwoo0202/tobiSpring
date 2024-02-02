@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.PlatformTransactionManager;
 import spring.dao.UserDao;
 import spring.domain.Level;
 import spring.domain.User;
@@ -22,6 +23,9 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = "file:src/main/resources/applicationContext.xml")
 class UserServiceTest {
+
+    @Autowired
+    PlatformTransactionManager transactionManager;
 
     @Autowired
     UserService userService;
@@ -112,7 +116,7 @@ class UserServiceTest {
 
         UserService testUserService = new TestUserService(users.get(3).getId());
         testUserService.setUserDao(this.userDao);
-        testUserService.setDataSource(this.dataSource);
+        testUserService.setTransactionManager(transactionManager);
         userDao.deleteAll();
 
         for(User user : users) userDao.add(user);
