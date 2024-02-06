@@ -10,13 +10,17 @@
         <property name="password" value="bootuser"/>
     </bean>
 
-    <bean id="userService" class="spring.service.UserService">
-        <property name="userDao" ref="userDao"/>
+    <bean id="userDao" class="spring.dao.UserDaoJdbc">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <bean id="userService" class="spring.service.UserServiceTx">
+        <property name="userService" ref="userServiceImpl"/>
         <property name="transactionManager" ref="transactionManager"/>
     </bean>
 
-    <bean id="userDao" class="spring.dao.UserDaoJdbc">
-        <property name="dataSource" ref="dataSource"/>
+    <bean id="userServiceImpl" class="spring.service.UserServiceImpl">
+        <property name="userDao" ref="userDao"></property>
     </bean>
 
     <bean id="transactionManager"

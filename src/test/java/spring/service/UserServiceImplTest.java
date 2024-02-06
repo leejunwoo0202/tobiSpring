@@ -28,7 +28,7 @@ class UserServiceTest {
     PlatformTransactionManager transactionManager;
 
     @Autowired
-    UserService userService;
+    UserServiceImpl userServiceImpl;
 
     @Autowired
     UserDao userDao;
@@ -43,19 +43,19 @@ class UserServiceTest {
     public void setUp() {
 
         System.out.println("userDao = " + userDao);
-        System.out.println("userService = " + userService);
+        System.out.println("userService = " + userServiceImpl);
         users = Arrays.asList(
-                new User("a", "aaa", "1111", Level.BASIC, UserService.MIN_LOGCOUNT_FOR_SILVER-1, 0),
-                new User("b", "bbb", "2222", Level.BASIC, UserService.MIN_LOGCOUNT_FOR_SILVER, 0),
-                new User("c", "ccc", "3333", Level.SILVER, 60, UserService.MIN_RECOMMEND_FOR_GOLD-1),
-                new User("d", "ddd", "4444", Level.SILVER, 60, UserService.MIN_RECOMMEND_FOR_GOLD),
+                new User("a", "aaa", "1111", Level.BASIC, UserServiceImpl.MIN_LOGCOUNT_FOR_SILVER-1, 0),
+                new User("b", "bbb", "2222", Level.BASIC, UserServiceImpl.MIN_LOGCOUNT_FOR_SILVER, 0),
+                new User("c", "ccc", "3333", Level.SILVER, 60, UserServiceImpl.MIN_RECOMMEND_FOR_GOLD-1),
+                new User("d", "ddd", "4444", Level.SILVER, 60, UserServiceImpl.MIN_RECOMMEND_FOR_GOLD),
                 new User("e", "eee", "5555", Level.GOLD, 100, Integer.MAX_VALUE)
         );
     }
 
     @Test
     public void bean(){
-        Assertions.assertThat(this.userService).isNotNull();
+        Assertions.assertThat(this.userServiceImpl).isNotNull();
     }
 
     @Test
@@ -64,7 +64,7 @@ class UserServiceTest {
 
         for(User user : users) userDao.add(user);
 
-        userService.canUpgradeLevels();
+        userServiceImpl.canUpgradeLevels();
 
         checkLevelUpgraded(users.get(0), false);
         checkLevelUpgraded(users.get(1), true);
@@ -100,8 +100,8 @@ class UserServiceTest {
         User userWithoutLevel = users.get(0);
         userWithoutLevel.setLevel(null);
 
-        userService.add(userWithLevel);
-        userService.add(userWithoutLevel);
+        userServiceImpl.add(userWithLevel);
+        userServiceImpl.add(userWithoutLevel);
 
         User userWithLevelRead = userDao.get(userWithLevel.getId());
         User userWithoutLevelRead = userDao.get(userWithoutLevel.getId());
@@ -114,15 +114,19 @@ class UserServiceTest {
     @Test
     public void upgradeAllOrNothing(){
 
-        UserService testUserService = new TestUserService(users.get(3).getId());
+        TestUserService testUserService = new TestUserService(users.get(3).getId());
         testUserService.setUserDao(this.userDao);
-        testUserService.setTransactionManager(transactionManager);
+
+        UserServiceTx txUserService = new UserServiceTx();
+        txUserService.setTransactionManager(transactionManager);
+        txUserService.setUserService(testUserService);
+
         userDao.deleteAll();
 
         for(User user : users) userDao.add(user);
 
         try{
-            testUserService.canUpgradeLevels();
+            txUserService.canUpgradeLevels();
             fail("TestUserServiceException expected");
         }catch(TestUserServiceException | SQLException e){
 
@@ -133,7 +137,7 @@ class UserServiceTest {
 
     }
 
-    static class TestUserService extends UserService {
+    static class TestUserService extends UserServiceImpl {
         private String id;
 
         private TestUserService(String id){
