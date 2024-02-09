@@ -4,16 +4,27 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.aop.ClassFilter;
+import org.springframework.aop.Pointcut;
+import org.springframework.aop.framework.ProxyFactoryBean;
+import org.springframework.aop.support.DefaultPointcutAdvisor;
+import org.springframework.aop.support.NameMatchMethodPointcut;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.PlatformTransactionManager;
+import spring.dao.MockUserDao;
 import spring.dao.UserDao;
 import spring.domain.Level;
 import spring.domain.User;
+import spring.handler.TransactionHandler;
 
 import javax.sql.DataSource;
+import java.lang.reflect.Proxy;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -21,8 +32,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(locations = "file:src/main/resources/applicationContext.xml")
+@ContextConfiguration(locations = "file:src/main/resources/FactoryBeanTest-context.xml")
 class UserServiceTest {
+
+    @Autowired
+    UserService userService;
 
     @Autowired
     PlatformTransactionManager transactionManager;
@@ -33,10 +47,14 @@ class UserServiceTest {
     @Autowired
     UserDao userDao;
 
+
+
     @Autowired
-    DataSource dataSource;
+    ApplicationContext context;
 
     List<User> users;
+
+
 
 
     @BeforeEach
@@ -60,20 +78,28 @@ class UserServiceTest {
 
     @Test
     public void upgradeLevels() throws SQLException {
-        userDao.deleteAll();
 
-        for(User user : users) userDao.add(user);
+        UserServiceImpl userServiceImpl = new UserServiceImpl();
+
+        MockUserDao mockUserDao = new MockUserDao(this.users);
+        userServiceImpl.setUserDao(mockUserDao);
 
         userServiceImpl.canUpgradeLevels();
 
-        checkLevelUpgraded(users.get(0), false);
-        checkLevelUpgraded(users.get(1), true);
-        checkLevelUpgraded(users.get(2), false);
-        checkLevelUpgraded(users.get(3), true);
-        checkLevelUpgraded(users.get(4), false);
+        List<User> updated = mockUserDao.getUpdated();
+        Assertions.assertThat(updated.size()).isEqualTo(2);
+        checkUserAndLevel(updated.get(0), "a", Level.SILVER);
+        checkUserAndLevel(updated.get(1), "b", Level.GOLD);
 
 
 
+
+
+    }
+
+    private void checkUserAndLevel(User updated, String expectedId, Level expectedLevel){
+        Assertions.assertThat(updated.getId()).isEqualTo(expectedId);
+        Assertions.assertThat(updated.getLevel()).isEqualTo(expectedLevel);
     }
 
     private void checkLevelUpgraded(User user, boolean upgraded) {
@@ -112,14 +138,18 @@ class UserServiceTest {
     }
 
     @Test
+    @DirtiesContext
     public void upgradeAllOrNothing(){
 
         TestUserService testUserService = new TestUserService(users.get(3).getId());
         testUserService.setUserDao(this.userDao);
 
-        UserServiceTx txUserService = new UserServiceTx();
-        txUserService.setTransactionManager(transactionManager);
-        txUserService.setUserService(testUserService);
+        ProxyFactoryBean txProxyFactoryBean =
+                context.getBean("&userService", ProxyFactoryBean.class);
+
+        txProxyFactoryBean.setTarget(testUserService);
+        UserService txUserService = (UserService) txProxyFactoryBean.getObject();
+
 
         userDao.deleteAll();
 
@@ -153,6 +183,57 @@ class UserServiceTest {
     static class TestUserServiceException extends RuntimeException{
 
     }
+
+    static class MockUserDao implements UserDao{
+
+        private List<User> users;
+        private List<User> updated = new ArrayList<>();
+
+        private MockUserDao(List<User> users){
+            this.users = users;
+        }
+
+        public List<User> getUpdated(){
+            return this.updated;
+        }
+
+        @Override
+        public List<User> getAll() {
+            return this.users;
+        }
+
+        @Override
+        public void update(User user) {
+            updated.add(user);
+        }
+
+        @Override
+        public void deleteAll() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public int getCount() {
+            throw new UnsupportedOperationException();
+        }
+
+
+
+        @Override
+        public void add(User user) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public User get(String id) {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+
+
+
+
 
 
 }
