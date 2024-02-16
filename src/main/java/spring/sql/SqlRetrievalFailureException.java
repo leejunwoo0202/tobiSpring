@@ -1,12 +1,19 @@
 package spring.sql;
 
-public class SqlRetrievalFailureException extends RuntimeException{
+public class SqlRetrievalFailureException extends RuntimeException {
+    public SqlRetrievalFailureException() {
+        super();
+    }
 
-    public SqlRetrievalFailureException(String message){
+    public SqlRetrievalFailureException(String message) {
         super(message);
     }
 
-    public SqlRetrievalFailureException(String message, Throwable cause){
+    public SqlRetrievalFailureException(Throwable cause) {
+        super(cause);
+    }
+
+    public SqlRetrievalFailureException(String message, Throwable cause) {
         super(message, cause);
     }
 }

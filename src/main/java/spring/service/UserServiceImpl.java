@@ -66,6 +66,6 @@ public class UserServiceImpl implements UserService{
     }
 
 
-
-
+    protected void update(User user) {
+    }
 }

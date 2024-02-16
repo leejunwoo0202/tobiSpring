@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(locations = "file:src/main/resources/FactoryBeanTest-context.xml")
+@ContextConfiguration(locations = "file:src/main/resources/applicationContext.xml")
 class UserServiceTest {
 
     @Autowired
@@ -168,15 +168,22 @@ class UserServiceTest {
     }
 
     static class TestUserService extends UserServiceImpl {
-        private String id;
+        private String id = "madnite1"; // users(3).getId()
 
-        private TestUserService(String id){
-            this.id = id;
+        public TestUserService(String id) {
+            super();
         }
 
-        protected void upgradeLevel(User user){
-            if(user.getId().equals(this.id)) throw new TestUserServiceException();
+        protected void upgradeLevel(User user) {
+            if (user.getId().equals(this.id)) throw new TestUserServiceException();
             super.upgradeLevel(user);
+        }
+
+        public List<User> getAll() {
+            for(User user : super.userDao.getAll()) {
+                super.update(user);
+            }
+            return null;
         }
     }
 

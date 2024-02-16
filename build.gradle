@@ -35,7 +35,15 @@ dependencies {
 	implementation 'javax.activation:activation:1.1.1'
 
 	testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '3.2.2'
+	implementation group: 'org.apache.cxf', name: 'cxf-core', version: '3.6.2'
+	implementation group: 'jakarta.xml.bind', name: 'jakarta.xml.bind-api', version: '4.0.0'
 
+	implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
+	implementation group: 'org.glassfish.jaxb', name: 'jaxb-xjc', version: '3.0.2'
+	implementation 'com.sun.xml.bind:jaxb-impl:2.4.0-b180830.0438'
+	implementation group: 'jakarta.activation', name: 'jakarta.activation-api', version: '2.1.2'
+
+	implementation group: 'org.testifyproject.local-resources', name: 'hsql', version: '1.0.2'
 }
 
 tasks.named('test') {
