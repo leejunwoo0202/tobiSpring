@@ -12,23 +12,33 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class AbstractUpdatableSqlRegistryTest {
-    UpdatableSqlRegistry sqlRegistry;
+    protected UpdatableSqlRegistry sqlRegistry;
 
     @BeforeEach
     public void setUp(){
-        sqlRegistry = new ConcurrentHashMapSqlRegistry();
+        sqlRegistry = createUpdatableSqlRegistry();
         sqlRegistry.registerSql("KEY1", "SQL1");
         sqlRegistry.registerSql("KEY2", "SQL2");
         sqlRegistry.registerSql("KEY3", "SQL3");
     }
+
+    abstract protected UpdatableSqlRegistry createUpdatableSqlRegistry();
 
     @Test
     public void find() {
         checkFindResult("SQL1", "SQL2", "SQL3");
     }
 
+
+
     private void checkFindResult(String expected1, String expected2, String expected3) {
 
+        Assertions.assertThat(sqlRegistry.findSql("KEY1")).isEqualTo(expected1);
+        Assertions.assertThat(sqlRegistry.findSql("KEY2")).isEqualTo(expected2);
+        Assertions.assertThat(sqlRegistry.findSql("KEY3")).isEqualTo(expected3);
+    }
+
+    protected void checkFind(String expected1, String expected2, String expected3) {
         Assertions.assertThat(sqlRegistry.findSql("KEY1")).isEqualTo(expected1);
         Assertions.assertThat(sqlRegistry.findSql("KEY2")).isEqualTo(expected2);
         Assertions.assertThat(sqlRegistry.findSql("KEY3")).isEqualTo(expected3);
