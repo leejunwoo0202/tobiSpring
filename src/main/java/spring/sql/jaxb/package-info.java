@@ -5,5 +5,9 @@
 // ���� ��¥: 2024.02.15 �ð� 04:32:50 PM KST 
 //
 
-@javax.xml.bind.annotation.XmlSchema(namespace = "http://www.epril.com/sqlmap", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+@XmlSchema(namespace = "http://www.epril.com/sqlmap",
+        elementFormDefault = XmlNsForm.QUALIFIED)
 package spring.sql.jaxb;
+
+import jakarta.xml.bind.annotation.XmlNsForm;
+import jakarta.xml.bind.annotation.XmlSchema;

@@ -1,14 +1,14 @@
-//package spring.factories;
-//
-//import javax.sql.DataSource;
-//
-//import org.springframework.context.annotation.Bean;
-//import org.springframework.context.annotation.Configuration;
-//import org.springframework.jdbc.datasource.SimpleDriverDataSource;
-//import spring.dao.UserDao;
-//import spring.dao.UserDaoJdbc;
-//import spring.service.UserService;
-//
+package spring.factories;
+
+import javax.sql.DataSource;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.SimpleDriverDataSource;
+import spring.dao.UserDao;
+import spring.dao.UserDaoJdbc;
+import spring.service.UserService;
+
 //@Configuration
 //public class DaoFactory {
 //    @Bean

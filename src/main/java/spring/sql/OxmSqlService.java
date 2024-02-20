@@ -20,7 +20,7 @@ public class OxmSqlService implements SqlService {
         this.sqlRegistry = sqlRegistry;
     }
 
-    public void setUnmarshaller(Unmarshaller unmarshaller) {
+        public void setUnmarshaller(Unmarshaller unmarshaller) {
         this.oxmSqlReader.setUnmarshaller(unmarshaller);
     }
 
@@ -42,7 +42,7 @@ public class OxmSqlService implements SqlService {
 
     private class OxmSqlReader implements SqlReader {
         private Unmarshaller unmarshaller;
-        private final static String DEFAULT_SQLMAP_FILE = "jaxb/sqlmap.xml";
+        private final static String DEFAULT_SQLMAP_FILE = "/jaxb/sqlmap.xml";
         private String sqlmapFile = DEFAULT_SQLMAP_FILE;
 
         public void setUnmarshaller(Unmarshaller unmarshaller) {
@@ -58,6 +58,7 @@ public class OxmSqlService implements SqlService {
                 Source source = new StreamSource(UserDao.class.getResourceAsStream(this.sqlmapFile));
                 Sqlmap sqlmap = (Sqlmap)this.unmarshaller.unmarshal(source);
                 for(SqlType sql : sqlmap.getSql()) {
+                    System.out.println("sql.value = " + sql.getValue());
                     sqlRegistry.registerSql(sql.getKey(), sql.getValue());
                 }
             } catch (IOException e) {

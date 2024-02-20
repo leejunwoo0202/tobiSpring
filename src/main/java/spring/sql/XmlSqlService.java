@@ -1,13 +1,14 @@
 package spring.sql;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
 import spring.dao.UserDao;
 import spring.sql.jaxb.SqlType;
 import spring.sql.jaxb.Sqlmap;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
+
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;

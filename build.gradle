@@ -17,33 +17,20 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter'
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+	implementation 'org.mariadb.jdbc:mariadb-java-client:3.3.2'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	implementation group: 'org.springframework', name: 'spring-jdbc', version: '5.2.0.RELEASE'
-
-	implementation group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '3.3.2'
-	testImplementation group: 'org.hamcrest', name: 'java-hamcrest', version: '2.0.0.0'
-
-
-	implementation group: 'org.springframework', name: 'spring-oxm', version: '6.1.3'
+	implementation 'com.sun.mail:javax.mail:1.6.2'
+	implementation 'jakarta.activation:jakarta.activation-api:2.1.2'
+	implementation 'org.springframework:spring-context-support:6.1.3'
+	// https://mvnrepository.com/artifact/org.aspectj/aspectjtools
+	implementation 'org.aspectj:aspectjtools:1.9.21'
+	// https://mvnrepository.com/artifact/jakarta.xml.bind/jakarta.xml.bind-api
 	implementation 'jakarta.xml.bind:jakarta.xml.bind-api'
-	implementation 'javax.xml.bind:jaxb-api:2.4.0-b180830.0359'
-	implementation 'org.glassfish.jaxb:jaxb-xjc:4.0.2'
-
-	implementation 'javax.xml.bind:jaxb-api'
-	runtimeOnly 'com.sun.xml.bind:jaxb-impl:4.0.2'
 	implementation 'org.glassfish.jaxb:jaxb-runtime'
-	implementation 'javax.activation:activation:1.1.1'
-
-	testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '3.2.2'
-	implementation group: 'org.apache.cxf', name: 'cxf-core', version: '3.6.2'
-	implementation group: 'jakarta.xml.bind', name: 'jakarta.xml.bind-api', version: '4.0.0'
-
-	implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
-	implementation group: 'org.glassfish.jaxb', name: 'jaxb-xjc', version: '3.0.2'
-	implementation 'com.sun.xml.bind:jaxb-impl:2.4.0-b180830.0438'
-	implementation group: 'jakarta.activation', name: 'jakarta.activation-api', version: '2.1.2'
-
-	implementation group: 'org.testifyproject.local-resources', name: 'hsql', version: '1.0.2'
+	implementation 'org.springframework:spring-oxm'
+	// https://mvnrepository.com/artifact/org.hsqldb/hsqldb
+	testImplementation 'org.hsqldb:hsqldb'
 }
 
 tasks.named('test') {

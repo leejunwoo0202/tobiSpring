@@ -7,6 +7,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import spring.configuration.TestApplicationContext;
 import spring.domain.Level;
 import spring.domain.User;
 
@@ -17,8 +18,7 @@ import static org.assertj.core.api.Assertions.*;
 
 
 @ExtendWith(SpringExtension.class)
-//@ContextConfiguration(classes = DaoFactory.class)
-@ContextConfiguration(locations = "file:src/main/resources/applicationContext.xml")
+@ContextConfiguration(classes = TestApplicationContext.class)
 class UserDaoTest {
 
 
