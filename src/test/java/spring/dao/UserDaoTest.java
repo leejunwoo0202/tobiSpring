@@ -1,13 +1,15 @@
 package spring.dao;
 
+import configuration.TestAppContext;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import spring.configuration.TestApplicationContext;
+import spring.configuration.AppContext;
 import spring.domain.Level;
 import spring.domain.User;
 
@@ -18,12 +20,15 @@ import static org.assertj.core.api.Assertions.*;
 
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = TestApplicationContext.class)
+@ContextConfiguration(classes = {TestAppContext.class, AppContext.class })
 class UserDaoTest {
 
 
     @Autowired
     private UserDao userDao;
+
+    @Autowired
+    DefaultListableBeanFactory bf;
 
 
 
@@ -178,6 +183,15 @@ class UserDaoTest {
         User user2same = userDao.get(user2.getId());
         checkSameUser(user2, user2same);
 
+    }
+
+
+    @Test
+    public void beans()
+    {
+        for(String n : bf.getBeanDefinitionNames()){
+            System.out.println(n + " \t " + bf.getBean(n).getClass().getName());
+        }
     }
 
 }

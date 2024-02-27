@@ -4,36 +4,26 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.aop.ClassFilter;
-import org.springframework.aop.Pointcut;
 import org.springframework.aop.framework.ProxyFactoryBean;
-import org.springframework.aop.support.DefaultPointcutAdvisor;
-import org.springframework.aop.support.NameMatchMethodPointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.PlatformTransactionManager;
-import spring.dao.MockUserDao;
 import spring.dao.UserDao;
 import spring.domain.Level;
 import spring.domain.User;
-import spring.handler.TransactionHandler;
 
-import javax.sql.DataSource;
-import java.lang.reflect.Proxy;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = "file:src/main/resources/applicationContext.xml")
-class UserServiceTest {
+public class UserServiceTest {
 
     @Autowired
     UserService userService;
@@ -157,7 +147,7 @@ class UserServiceTest {
 
         try{
             txUserService.canUpgradeLevels();
-            fail("TestUserServiceException expected");
+            Assertions.fail("TestUserServiceException expected");
         }catch(TestUserServiceException | SQLException e){
 
         }
@@ -169,6 +159,11 @@ class UserServiceTest {
 
     public static class TestUserService extends UserServiceImpl {
         private String id = "madnite1"; // users(3).getId()
+
+        public TestUserService()
+        {
+
+        }
 
         public TestUserService(String id) {
             super();

@@ -2,45 +2,73 @@ package spring.configuration;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-import org.springframework.oxm.Unmarshaller;
-import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import spring.annotation.EnableSqlService;
 import spring.dao.UserDao;
 import spring.dao.UserDaoJdbc;
 import spring.service.UserService;
 import spring.service.UserServiceImpl;
-import spring.sql.OxmSqlService;
-import spring.sql.SqlRegistry;
 import spring.sql.SqlService;
-import spring.sql.updatable.EmbeddedDbSqlRegistry;
 
 import javax.sql.DataSource;
+import java.sql.Driver;
 
 @Configuration
 @EnableTransactionManagement
-public class TestApplicationContext {
+@Import({SqlServiceContext.class })
+@EnableSqlService
+@PropertySource("/database.properties")
+public class AppContext implements SqlMapConfig{
     /**
      * DB연결과 트랜잭션
      */
 
+    @Autowired
+    Environment env;
+
+    @Value("${db.driverClass}") Class<? extends Driver> driverClass;
+    @Value("${db.url}") String url;
+    @Value("${db.username}") String username;
+    @Value("${db.password}") String password;
+
+
+    @Override
+    public Resource getSqlMapResource()
+    {
+        return new ClassPathResource("sqlmap.xml", UserDao.class);
+    }
+
     @Bean
-    public DataSource dataSource() {
-        SimpleDriverDataSource dataSource = new SimpleDriverDataSource ();
+    public static PropertySourcesPlaceholderConfigurer placeholderConfigurer()
+    {
+        return new PropertySourcesPlaceholderConfigurer();
+    }
 
-        dataSource.setDriverClass(org.mariadb.jdbc.Driver.class);
-        dataSource.setUrl("jdbc:mariadb://localhost:3307/bootex");
-        dataSource.setUsername("bootuser");
-        dataSource.setPassword("bootuser");
+    @Bean
+    public DataSource dataSource()
+    {
+        SimpleDriverDataSource ds = new SimpleDriverDataSource();
 
-        return dataSource;
+
+        ds.setDriverClass(this.driverClass);
+        ds.setUrl(this.url);
+        ds.setUsername(this.username);
+        ds.setPassword(this.password);
+
+        return ds;
     }
 
     @Bean
@@ -85,39 +113,5 @@ public class TestApplicationContext {
 
 
 
-    /**
-     * SQL서비스
-     */
 
-    @Bean
-    public SqlService sqlService() {
-        OxmSqlService sqlService = new OxmSqlService();
-        sqlService.setUnmarshaller(unmarshaller());
-        sqlService.setSqlRegistry(sqlRegistry());
-        return sqlService;
-    }
-
-
-    @Bean
-    public SqlRegistry sqlRegistry() {
-        EmbeddedDbSqlRegistry sqlRegistry = new EmbeddedDbSqlRegistry();
-        sqlRegistry.setDataSource(embeddedDatabase());
-        return sqlRegistry;
-    }
-
-    @Bean
-    public Unmarshaller unmarshaller() {
-        Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-        marshaller.setContextPath("spring.sql.jaxb");
-        return marshaller;
-    }
-
-    @Bean
-    public DataSource embeddedDatabase() {
-        return (DataSource) new EmbeddedDatabaseBuilder()
-                .setName("embeddedDatabase")
-                .setType(EmbeddedDatabaseType.HSQL)
-                .addScript("classpath:/sql/sqlRegistrySchema.sql")
-                .build();
-    }
 }
